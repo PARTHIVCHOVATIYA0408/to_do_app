@@ -29,7 +29,6 @@ class _HomeSceenState extends State<HomeSceen> {
           startActionPane: ActionPane(
             key: const ValueKey(0),
             motion: const ScrollMotion(),
-
             // dismissible: DismissiblePane(onDismissed: () {}),
             children: [
               SlidableAction(
