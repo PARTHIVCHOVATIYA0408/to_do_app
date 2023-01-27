@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:to_do_app/screens/home_screen.dart';
+
+import 'screens/splace_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -16,7 +17,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const HomeSceen(),
+      home: const SplaceScreen(),
     );
   }
 }

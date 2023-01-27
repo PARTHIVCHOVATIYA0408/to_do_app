@@ -1,69 +1,141 @@
 import 'package:flutter/material.dart';
+import 'package:to_do_app/model/to_do_model.dart';
 
 class DataEnterScreen extends StatefulWidget {
-  const DataEnterScreen({super.key});
+  final ToDoModel? item;
+  const DataEnterScreen({Key? key, this.item}) : super(key: key);
 
   @override
   State<DataEnterScreen> createState() => _DataEnterScreenState();
 }
 
 class _DataEnterScreenState extends State<DataEnterScreen> {
-  TextEditingController textEditingController = TextEditingController();
+  TextEditingController titleController = TextEditingController();
+  TextEditingController dateController = TextEditingController();
+  TextEditingController timeController = TextEditingController();
+  TextEditingController descriptionController = TextEditingController();
 
-  DateTime date = DateTime(2022, 12, 24);
+  @override
+  void initState() {
+    if (widget.item != null) {
+      titleController.text = widget.item!.title!;
+      dateController.text = widget.item!.date!;
+      timeController.text = widget.item!.time!;
+      descriptionController.text = widget.item!.description!;
+    }
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("TO DO App"),
+        title: const Text("ToDo Add"),
       ),
-      body: Padding(
-        padding: const EdgeInsets.only(left: 15, right: 15, top: 10),
-        child: Column(
-          children: [
-            TextField(
-              controller: textEditingController,
-              keyboardType: TextInputType.text,
-              textInputAction: TextInputAction.next,
-              autofocus: false,
-              autocorrect: false,
+      body: ListView(
+        padding: const EdgeInsets.all(15),
+        physics: const BouncingScrollPhysics(),
+        children: [
+          TextField(
+            controller: titleController,
+            decoration: InputDecoration(
+              hintText: "Enter title",
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(15),
+                borderSide: const BorderSide(color: Colors.black87),
+              ),
+              filled: true,
+              fillColor: Colors.grey.shade300,
+            ),
+          ),
+          const SizedBox(height: 15),
+          GestureDetector(
+            onTap: () async {
+              DateTime? pickedDate = await showDatePicker(
+                context: context,
+                initialDate: DateTime.now(),
+                firstDate: DateTime.now(),
+                lastDate: DateTime(2030),
+              );
+
+              debugPrint("date ----------->> $pickedDate");
+              dateController.text = pickedDate.toString().split(" ").first;
+              setState(() {});
+            },
+            child: TextField(
+              controller: dateController,
+              enabled: false,
               decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(
-                    15,
-                  ),
+                hintText: "Select date",
+                hintStyle: TextStyle(color: Colors.black.withOpacity(0.6)),
+                disabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(15),
+                  borderSide: const BorderSide(color: Colors.black87),
                 ),
-                prefixIcon: const Icon(Icons.title_rounded),
-                labelText: "Enter Title...",
-                focusColor: Colors.amber,
+                filled: true,
+                fillColor: Colors.grey.shade300,
               ),
             ),
-            // Row(
-            //   children: [
-            //     Text(
-            //       "${date.day}/${date.month}/${date.year}",
-            //       style: const TextStyle(fontSize: 28),
-            //     ),
-            //     ElevatedButton(
-            //       onPressed: () async {
-            //         DateTime? newDate = await showDatePicker(
-            //           context: context,
-            //           initialDate: date,
-            //           firstDate: DateTime(1900),
-            //           lastDate: DateTime(2050),
-            //         );
-            //         if (newDate == null) return;
-            //         setState(
-            //           () => date = newDate,
-            //         );
-            //       },
-            //       child: const Text("Select Date"),
-            //     ),
-            //   ],
-            // )
-          ],
-        ),
+          ),
+          const SizedBox(height: 15),
+          GestureDetector(
+            onTap: () async {
+              TimeOfDay? pickTime = await showTimePicker(
+                context: context,
+                initialTime: TimeOfDay.now(),
+              );
+              debugPrint("Time ---------->> ${pickTime!.format(context)}");
+              timeController.text = pickTime.format(context);
+              setState(() {});
+            },
+            child: TextField(
+              controller: timeController,
+              enabled: false,
+              decoration: InputDecoration(
+                hintText: "Select time",
+                hintStyle: TextStyle(color: Colors.black.withOpacity(0.6)),
+                disabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(15),
+                  borderSide: const BorderSide(color: Colors.black87),
+                ),
+                filled: true,
+                fillColor: Colors.grey.shade300,
+              ),
+            ),
+          ),
+          const SizedBox(height: 15),
+          TextField(
+            controller: descriptionController,
+            minLines: 5,
+            maxLines: 7,
+            decoration: InputDecoration(
+              hintText: "Enter description",
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(15),
+                borderSide: const BorderSide(color: Colors.black87),
+              ),
+              filled: true,
+              fillColor: Colors.grey.shade300,
+            ),
+          ),
+          const SizedBox(height: 30),
+          ElevatedButton(
+            onPressed: () {
+              ToDoModel todoModel = ToDoModel(
+                title: titleController.text,
+                date: dateController.text,
+                time: timeController.text,
+                description: descriptionController.text,
+              );
+              Navigator.pop(context, todoModel);
+            },
+            style: ButtonStyle(
+              fixedSize:
+                  MaterialStateProperty.all(const Size(double.infinity, 45)),
+            ),
+            child: const Text("Add ToDo"),
+          ),
+        ],
       ),
     );
   }
